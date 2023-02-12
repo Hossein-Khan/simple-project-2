@@ -9,9 +9,9 @@ type LoginProps = {
 };
 const Login: React.FunctionComponent<LoginProps> = function (props) {
   const [enteredEmail, setEnteredEmail] = useState<string>("");
-  const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
+  const [emailIsValid, setEmailIsValid] = useState<boolean>();
   const [enteredPassword, setEnteredPassword] = useState<string>("");
-  const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
+  const [passwordIsValid, setPasswordIsValid] = useState<boolean>();
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> =
