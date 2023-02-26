@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useState } from "react";
+import React, { SyntheticEvent, useEffect, useReducer, useState } from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
@@ -7,27 +7,49 @@ import Button from "../UI/Button/Button";
 type LoginProps = {
   onLogin: (enteredEmail: string, enteredPassword: string) => void;
 };
+type EmailState = { value: string; isValid: boolean };
+type EmailAction =
+  | { type: "INPUT_BLUR" }
+  | { type: "USER_INPUT"; value: string };
+
+const emailReducer = function (
+  state: EmailState,
+  action: EmailAction
+): EmailState {
+  switch (action.type) {
+    case "USER_INPUT":
+      return { value: action.value, isValid: action.value.includes("@") };
+      break;
+    case "INPUT_BLUR":
+      return { value: state.value, isValid: state.value.includes("@") };
+      break;
+  }
+};
+
 const Login: React.FunctionComponent<LoginProps> = function (props) {
-  const [enteredEmail, setEnteredEmail] = useState<string>("");
-  const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
+  // const [enteredEmail, setEnteredEmail] = useState<string>("");
+  // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
   const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
   const [formIsValid, setFormIsValid] = useState<boolean>(false);
 
+  const [emailState, emailDispatch] = useReducer(emailReducer, {
+    value: "",
+    isValid: true,
+  });
+
   useEffect(() => {
     const timerIdentifier = setTimeout(() => {
-      setFormIsValid(
-        enteredEmail.includes("@") && enteredPassword.trim().length > 6
-      );
+      setFormIsValid(emailState.isValid && enteredPassword.trim().length > 6);
     }, 500);
     return () => {
       clearTimeout(timerIdentifier);
     };
-  }, [enteredEmail, enteredPassword]);
+  }, [emailState, enteredPassword]);
 
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> =
     function (event) {
-      setEnteredEmail(event.target.value);
+      emailDispatch({ type: "USER_INPUT", value: event.target.value });
     };
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> =
@@ -36,7 +58,7 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
     };
 
   const validateEmailHandler: React.EventHandler<SyntheticEvent> = function () {
-    setEmailIsValid(enteredEmail.includes("@"));
+    emailDispatch({ type: "INPUT_BLUR" });
   };
 
   const validatePasswordHandler: React.EventHandler<SyntheticEvent> =
@@ -48,7 +70,7 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
     event
   ) {
     event.preventDefault();
-    props.onLogin(enteredEmail, enteredPassword);
+    props.onLogin(emailState.value, enteredPassword);
   };
 
   return (
@@ -56,14 +78,14 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailIsValid === false ? classes.invalid : ""
+            emailState.isValid === false ? classes.invalid : ""
           }`}
         >
           <label htmlFor="email">E-Mail</label>
           <input
             type="email"
             id="email"
-            value={enteredEmail}
+            value={emailState.value}
             onChange={emailChangeHandler}
             onBlur={validateEmailHandler}
           />
