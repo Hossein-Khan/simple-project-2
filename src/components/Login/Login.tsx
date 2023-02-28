@@ -7,45 +7,74 @@ import Button from "../UI/Button/Button";
 type LoginProps = {
   onLogin: (enteredEmail: string, enteredPassword: string) => void;
 };
-type EmailState = { value: string; isValid: boolean };
-type EmailAction =
+
+type InputState = { value: string; isValid: boolean | "INITIAL" };
+type InputAction =
   | { type: "INPUT_BLUR" }
   | { type: "USER_INPUT"; value: string };
 
 const emailReducer = function (
-  state: EmailState,
-  action: EmailAction
-): EmailState {
+  state: InputState,
+  action: InputAction
+): InputState {
   switch (action.type) {
     case "USER_INPUT":
       return { value: action.value, isValid: action.value.includes("@") };
-      break;
+    //break;
     case "INPUT_BLUR":
       return { value: state.value, isValid: state.value.includes("@") };
-      break;
+    //break;
+    default:
+      return { value: "", isValid: false };
+  }
+};
+
+const passwordReducer = function (
+  state: InputState,
+  action: InputAction
+): InputState {
+  switch (action.type) {
+    case "USER_INPUT":
+      return { value: action.value, isValid: action.value.length > 6 };
+    //break;
+    case "INPUT_BLUR":
+      return { value: state.value, isValid: state.value.length > 6 };
+    //break;
+    default:
+      return { value: "", isValid: false };
   }
 };
 
 const Login: React.FunctionComponent<LoginProps> = function (props) {
   // const [enteredEmail, setEnteredEmail] = useState<string>("");
   // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
-  const [enteredPassword, setEnteredPassword] = useState<string>("");
-  const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
-  const [formIsValid, setFormIsValid] = useState<boolean>(false);
+  // const [enteredPassword, setEnteredPassword] = useState<string>("");
+  // const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
+  const [formIsValid, setFormIsValid] = useState<boolean | "INITIAL">(false);
 
   const [emailState, emailDispatch] = useReducer(emailReducer, {
     value: "",
-    isValid: true,
+    isValid: "INITIAL",
+  });
+
+  const [passwordState, passwordDispatch] = useReducer(passwordReducer, {
+    value: "",
+    isValid: "INITIAL",
   });
 
   useEffect(() => {
     const timerIdentifier = setTimeout(() => {
-      setFormIsValid(emailState.isValid && enteredPassword.trim().length > 6);
-    }, 500);
+      setFormIsValid(
+        (emailState.isValid === "INITIAL" &&
+          passwordState.isValid === "INITIAL") ||
+          (emailState.isValid && passwordState.isValid)
+      );
+      console.log("!");
+    }, 300);
     return () => {
       clearTimeout(timerIdentifier);
     };
-  }, [emailState, enteredPassword]);
+  }, [emailState.isValid, passwordState.isValid]);
 
   const emailChangeHandler: React.ChangeEventHandler<HTMLInputElement> =
     function (event) {
@@ -54,7 +83,7 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
 
   const passwordChangeHandler: React.ChangeEventHandler<HTMLInputElement> =
     function (event) {
-      setEnteredPassword(event.target.value);
+      passwordDispatch({ type: "USER_INPUT", value: event.target.value });
     };
 
   const validateEmailHandler: React.EventHandler<SyntheticEvent> = function () {
@@ -63,14 +92,14 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
 
   const validatePasswordHandler: React.EventHandler<SyntheticEvent> =
     function () {
-      setPasswordIsValid(enteredPassword.trim().length > 6);
+      passwordDispatch({ type: "INPUT_BLUR" });
     };
 
   const submitHandler: React.FormEventHandler<HTMLFormElement> = function (
     event
   ) {
     event.preventDefault();
-    props.onLogin(emailState.value, enteredPassword);
+    props.onLogin(emailState.value, passwordState.value);
   };
 
   return (
@@ -78,7 +107,7 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailState.isValid === false ? classes.invalid : ""
+            emailState.isValid ? "" : classes.invalid
           }`}
         >
           <label htmlFor="email">E-Mail</label>
@@ -92,14 +121,14 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
         </div>
         <div
           className={`${classes.control} ${
-            passwordIsValid === false ? classes.invalid : ""
+            passwordState.isValid ? "" : classes.invalid
           }`}
         >
           <label htmlFor="password">Password</label>
           <input
             type="password"
             id="password"
-            value={enteredPassword}
+            value={passwordState.value}
             onChange={passwordChangeHandler}
             onBlur={validatePasswordHandler}
           />
