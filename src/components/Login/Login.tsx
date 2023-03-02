@@ -8,7 +8,7 @@ type LoginProps = {
   onLogin: (enteredEmail: string, enteredPassword: string) => void;
 };
 
-type InputState = { value: string; isValid: boolean | "INITIAL" };
+type InputState = { value: string; isValid: boolean | unknown };
 type InputAction =
   | { type: "INPUT_BLUR" }
   | { type: "USER_INPUT"; value: string };
@@ -50,26 +50,22 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
   // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
   // const [enteredPassword, setEnteredPassword] = useState<string>("");
   // const [passwordIsValid, setPasswordIsValid] = useState<boolean>(true);
-  const [formIsValid, setFormIsValid] = useState<boolean | "INITIAL">(false);
+  const [formIsValid, setFormIsValid] = useState<boolean | unknown>(null);
 
   const [emailState, emailDispatch] = useReducer(emailReducer, {
     value: "",
-    isValid: "INITIAL",
+    isValid: null,
   });
 
   const [passwordState, passwordDispatch] = useReducer(passwordReducer, {
     value: "",
-    isValid: "INITIAL",
+    isValid: null,
   });
 
   useEffect(() => {
     const timerIdentifier = setTimeout(() => {
-      setFormIsValid(
-        (emailState.isValid === "INITIAL" &&
-          passwordState.isValid === "INITIAL") ||
-          (emailState.isValid && passwordState.isValid)
-      );
-      console.log("!");
+      setFormIsValid(emailState.isValid && passwordState.isValid);
+      //console.log("!");
     }, 300);
     return () => {
       clearTimeout(timerIdentifier);
@@ -107,7 +103,9 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
       <form onSubmit={submitHandler}>
         <div
           className={`${classes.control} ${
-            emailState.isValid ? "" : classes.invalid
+            emailState.isValid || emailState.isValid === null
+              ? ""
+              : classes.invalid
           }`}
         >
           <label htmlFor="email">E-Mail</label>
@@ -121,7 +119,9 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
         </div>
         <div
           className={`${classes.control} ${
-            passwordState.isValid ? "" : classes.invalid
+            passwordState.isValid || passwordState.isValid === null
+              ? ""
+              : classes.invalid
           }`}
         >
           <label htmlFor="password">Password</label>
