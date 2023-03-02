@@ -4,7 +4,7 @@ import Card from "../UI/Card/Card";
 import styles from "./Home.module.css";
 
 type HomeProps = {
-  onLogout: () => void;
+  // onLogout: () => void;
 };
 
 const Home: React.FunctionComponent<HomeProps> = function (props) {

@@ -9,23 +9,23 @@ type NavigationProps = {
 };
 
 const Navigation: React.FunctionComponent<NavigationProps> = function (props) {
-  const ctx = useContext(AuthContext);
+  const authCtx = useContext(AuthContext);
   return (
     <nav className={classes.nav}>
       <ul>
-        {ctx.isLoggedIn && (
+        {authCtx.isLoggedInn && (
           <li>
             <a href="/">Users</a>
           </li>
         )}
-        {ctx.isLoggedIn && (
+        {authCtx.isLoggedInn && (
           <li>
             <a href="/">Admin</a>
           </li>
         )}
-        {ctx.isLoggedIn && (
+        {authCtx.isLoggedInn && (
           <li>
-            <button onClick={ctx.onLogout}>Logout</button>
+            <button onClick={authCtx.onLogout}>Logout</button>
           </li>
         )}
       </ul>

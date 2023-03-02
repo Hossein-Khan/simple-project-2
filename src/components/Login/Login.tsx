@@ -1,11 +1,18 @@
-import React, { SyntheticEvent, useEffect, useReducer, useState } from "react";
+import React, {
+  SyntheticEvent,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
+import AuthContext from "../../store/auth-context";
 
 type LoginProps = {
-  onLogin: (enteredEmail: string, enteredPassword: string) => void;
+  //onLogin: (enteredEmail: string, enteredPassword: string) => void;
 };
 
 type InputState = { value: string; isValid: boolean | unknown };
@@ -46,6 +53,8 @@ const passwordReducer = function (
 };
 
 const Login: React.FunctionComponent<LoginProps> = function (props) {
+  const authCtx = useContext(AuthContext);
+
   // const [enteredEmail, setEnteredEmail] = useState<string>("");
   // const [emailIsValid, setEmailIsValid] = useState<boolean>(true);
   // const [enteredPassword, setEnteredPassword] = useState<string>("");
@@ -95,7 +104,7 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
     event
   ) {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value);
+    authCtx.onLogin(emailState.value, passwordState.value);
   };
 
   return (
