@@ -1,4 +1,9 @@
-import React, { SyntheticEvent, useImperativeHandle, useRef } from "react";
+import React, {
+  forwardRef,
+  SyntheticEvent,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
 import classes from "./Input.module.css";
 
@@ -13,7 +18,9 @@ type InputProps = {
   onBlur: React.EventHandler<SyntheticEvent>;
 };
 
-const Input = React.forwardRef<any, InputProps>((props, ref) => {
+type refType = { focus: () => void };
+
+const Input = forwardRef<refType, InputProps>((props, ref) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const activate = function () {
     inputRef.current?.focus();

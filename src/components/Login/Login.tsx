@@ -73,8 +73,8 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
     isValid: null,
   });
 
-  const emailInputRef = useRef<any>(null);
-  const passwordInputRef = useRef<any>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const timerIdentifier = setTimeout(() => {
@@ -112,9 +112,9 @@ const Login: React.FunctionComponent<LoginProps> = function (props) {
     if (formIsValid) {
       authCtx.onLogin(emailState.value, passwordState.value);
     } else if (!emailState.isValid) {
-      emailInputRef.current.focus();
+      emailInputRef.current?.focus();
     } else {
-      passwordInputRef.current.focus();
+      passwordInputRef.current?.focus();
     }
   };
 
