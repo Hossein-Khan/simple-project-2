@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 interface AuthContextType {
-  isLoggedInn: boolean;
+  isLoggedIn: boolean;
   onLogout: () => void;
   onLogin: (email: string, password: string) => void;
 }
 
 const AuthContext = React.createContext<AuthContextType>({
-  isLoggedInn: false,
+  isLoggedIn: false,
   onLogout: () => {},
   onLogin: (email: string, password: string) => {},
 });
@@ -42,7 +42,7 @@ export const AuthContextProvider: React.FunctionComponent<AuthContextProviderPro
     return (
       <AuthContext.Provider
         value={{
-          isLoggedInn: isLoggedIn,
+          isLoggedIn: isLoggedIn,
           onLogout: logoutHandler,
           onLogin: loginHandler,
         }}
