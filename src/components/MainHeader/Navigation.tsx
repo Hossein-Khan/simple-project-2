@@ -13,17 +13,17 @@ const Navigation: React.FunctionComponent<NavigationProps> = function (props) {
   return (
     <nav className={classes.nav}>
       <ul>
-        {authCtx.isLoggedInn && (
+        {authCtx.isLoggedIn && (
           <li>
             <a href="/">Users</a>
           </li>
         )}
-        {authCtx.isLoggedInn && (
+        {authCtx.isLoggedIn && (
           <li>
             <a href="/">Admin</a>
           </li>
         )}
-        {authCtx.isLoggedInn && (
+        {authCtx.isLoggedIn && (
           <li>
             <button onClick={authCtx.onLogout}>Logout</button>
           </li>
